@@ -102,7 +102,7 @@ class FakeDevice
 			else
 			{
 				//generate error event
-				$this->generateEvent(FakeDevice::EVENT_ERROR, "port not exists|$arg1");
+				$this->generateEvent(phpMQTT::EVENT_ERROR, "port not exists|$arg1");
 			}
 		}
 	}
@@ -117,18 +117,18 @@ class FakeDevice
 	{
 		//portChanged, Error
 		switch ($type) {
-			case FakeDevice::EVENT_ERROR:
+			case phpMQTT::EVENT_ERROR:
 				$errText = $args[0];
 				$pubMsg = "$type:$errText";
 				$this->mqtt_publish("devices/{$this->uuid}/event",$pubMsg);
 				break;
-			case FakeDevice::EVENT_PORT_CHANGE:
+			case phpMQTT::EVENT_PORT_CHANGE:
 				$port = $args[0];
 				$val = $args[1];
 				$pubMsg = "$type:$port/$val" ;
 				$this->mqtt_publish("devices/{$this->uuid}/event",$pubMsg);
 				break;
-			case FakeDevice::EVENT_PORT_VAL:
+			case phpMQTT::EVENT_PORT_VAL:
 				$port = $args[0];
 				$val = $args[1];
 				$pubMsg = "$type:$port/$val" ;

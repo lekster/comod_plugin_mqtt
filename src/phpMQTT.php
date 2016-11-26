@@ -48,6 +48,11 @@ class phpMQTT {
 	private $username;			/* stores username */
 	private $password;			/* stores password */
 
+
+	const EVENT_ERROR = "ERROR";
+	const EVENT_PORT_CHANGE = "PortChange";
+	const EVENT_PORT_VAL = "PortVal";
+
 	function __construct($address, $port, $clientid){
 		$this->broker($address, $port, $clientid);
 	}
