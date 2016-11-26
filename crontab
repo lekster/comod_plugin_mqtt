@@ -1,0 +1,2 @@
+0 0    * * * logrotate.sh "21231" '1232131'
+* *    * * *    callback_sender.php 123  dcdfsasd
