@@ -52,6 +52,7 @@ class phpMQTT {
 	const EVENT_ERROR = "ERROR";
 	const EVENT_PORT_CHANGE = "PortChange";
 	const EVENT_PORT_VAL = "PortVal";
+	const EVENT_STARTUP = "Startup";
 
 	function __construct($address, $port, $clientid){
 		$this->broker($address, $port, $clientid);
