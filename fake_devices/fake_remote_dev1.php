@@ -3,7 +3,7 @@
 require_once( __DIR__ . "/../src/phpMQTT.php");
 
 
-class MQTTMessage()
+class MQTTMessage
 {
 	public $headers;
 	public $body;
@@ -20,13 +20,26 @@ class MQTTMessage()
 
 	*/
 
-	public static parse($msg)
+	public static function  parse($msg)
 	{
 
 	}
 
 }
 
+
+/*
+	devices/123/0/ports/a0
+	
+	get
+	set:1
+
+
+	event
+	PortVal:a0/2
+	ERROR:port not exists|a02
+
+*/
 
 class FakeDevice
 {
@@ -68,6 +81,10 @@ class FakeDevice
     const ENCIRCLED   = 52;
     const OVERLINED   = 53;
 
+
+    const MQTT_HOST = "vps172202180.mtu.immo";
+    //const MQTT_HOST = "192.168.1.150";
+
 	public static function ansiFormat($string)
     {
 	    $args = func_get_args();
@@ -85,7 +102,7 @@ class FakeDevice
 		$this->uuid = $uuid;
 		$this->deviceSeq = 0;
 
-		$this->mqtt = new phpMQTT("192.168.1.150", 1883, "remote_device_{$this->uuid}"); //Change client name to something unique
+		$this->mqtt = new phpMQTT(self::MQTT_HOST, 1883, "remote_device_{$this->uuid}"); //Change client name to something unique
 		if(!$this->mqtt->connect()){
 			exit(1);
 		}
@@ -97,10 +114,10 @@ class FakeDevice
 	{
 		echo self::ansiFormat("RECIEVED: ".date("r")."\nTopic:{$topic}\n$msg\n\n", self::FG_GREEN, self::BOLD);
 		//$mqtt->publish("devices/","Hello World! at ".date("r"),0);
-		list($null, $uuid, $deviceSeq, $cmd, $arg1, $null) = explode("/", $topic,6);
+		@list($null, $uuid, $deviceSeq, $cmd, $arg1, $null) = @explode("/", $topic,6);
 		echo ("$uuid, $deviceSeq, $cmd, $arg1, $null \n");
 		
-		$msgObj = MQTTMessage::parse($msg)
+		$msgObj = MQTTMessage::parse($msg);
 
 		/*if ($deviceSeq != $this->deviceSeq)
 		{
@@ -122,7 +139,7 @@ class FakeDevice
 			$portName = $arg1;
 			if (isset($this->ports[$portName]))
 			{
-				list($msgCmd, $msgArgs) = explode(":", $msg, 2);
+				@list($msgCmd, $msgArgs) = explode(":", $msg, 2);
 				echo ("$msgCmd, $msgArgs \n");
 				switch ($msgCmd) {
 					case 'get':
@@ -211,9 +228,10 @@ class FakeDevice
 		$topics["devices/{$this->uuid}/+/ports/#"] = array("qos"=>0, "function"=>[$this, "procmsg"]);
 
 		$this->mqtt->subscribe($topics,0);
+		var_dump("Subscribe to topics:", $topics);
 
 		while($this->mqtt->proc(false)){
-			var_dump("SLEEP");
+			//var_dump("SLEEP");
 			sleep(1);
 		}
 
@@ -246,5 +264,5 @@ class FakeDevice
 
 }
 
-$d =  new FakeDevice("123");
+$d =  new FakeDevice("ebaae2fb-e88f-43be-b2c7-3fad716d30c1");
 $d->handle();

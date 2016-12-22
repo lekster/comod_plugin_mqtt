@@ -58,6 +58,12 @@
             "description": "fabien@symfony.com",
             "type": "select",
             "options":{"values":["ru","en"]}
+        },
+        {
+            "name": "mqtt_host",
+            "val": "vps172202180.mtu.immo",
+            "type": "string",
+            "options": "123"
         }
     ]
 }
