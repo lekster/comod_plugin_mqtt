@@ -30,7 +30,7 @@ class MqttConsumerController extends AbstractCronController
 
 	const EVENT_PORTVAL = "PortVal";
 	const EVENT_ERROR = "ERROR";
-	const MQTT_HOST = "vps172202180.mtu.immo";
+	//const MQTT_HOST = "vps172202180.mtu.immo"; //192.168.1.150
 
 	protected function gen_uuid() {
 	    return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
@@ -69,8 +69,8 @@ class MqttConsumerController extends AbstractCronController
 	*/
 	public function actionConsume()
 	{
-		//$mqtt = new phpMQTT("192.168.1.150", 1883, "phpMQTT Server"); //Change client name to something unique
-		$mqtt = new \phpMQTT(SysHelper::getPluginSetting("Mqtt", "mqtt_host"), 1883, "MQTT_consumer_controller"); //Change client name to something unique
+		$mqttHost = SysHelper::getPluginSetting("Mqtt", "mqtt_host");
+		$mqtt = new \phpMQTT($mqttHost, 1883, "MQTT_consumer_controller"); //Change client name to something unique
 
 
 		if(!$mqtt->connect()){
@@ -87,8 +87,6 @@ class MqttConsumerController extends AbstractCronController
 		}
 
 		$mqtt->close();
-
-		
 	}
 
 	public function handleDevicesEvent($topic,$msg)
@@ -116,7 +114,7 @@ class MqttConsumerController extends AbstractCronController
 				{
 					//find main object with linked device
 					$value = PValues::find()->where(['device_id' => $dev->device_id, 'device_port_name' => $port])->one();
-					if ($value)
+					if (@$value)
 					{
 						//if obj val != val - update all objects and linked devices
 						$obj = Objects::find()->where(['id' => $value->object_id])->one();
@@ -135,7 +133,7 @@ class MqttConsumerController extends AbstractCronController
 
 			case self::EVENT_ERROR:
 
-				Yii::warning("ERROR detected|$topic|$msg");
+				Yii::error("ERROR MQTT detected|$topic|$msg");
 				
 				break;
 			

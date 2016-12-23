@@ -230,9 +230,19 @@ class FakeDevice
 		$this->mqtt->subscribe($topics,0);
 		var_dump("Subscribe to topics:", $topics);
 
+		$i=0;
 		while($this->mqtt->proc(false)){
 			//var_dump("SLEEP");
 			sleep(1);
+			$i++;
+			if ($i == 7)
+			{
+				$i = 0;
+				$port = "a0";
+				$val = mt_rand(0, 100);
+				$this->setPortValTempl($port, $val);
+				$this->generateEvent(phpMQTT::EVENT_PORT_VAL, $port, $val);
+			}
 		}
 
 
